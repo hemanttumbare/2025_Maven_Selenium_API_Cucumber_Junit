@@ -33,7 +33,11 @@
             <artifactId>cucumber-junit</artifactId>
             <version>7.21.1</version>
         </dependency>
-
+        <dependency>
+            <groupId>io.qameta.allure</groupId>
+            <artifactId>allure-junit4</artifactId>
+            <version>2.19.0</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -42,6 +46,11 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.5.2</version>
+                <configuration>
+                    <systemPropertyVariables>
+                        <cucumber.plugin>io.qameta.allure.cucumber4jvm.AllureCucumber4Jvm</cucumber.plugin>
+                    </systemPropertyVariables>
+                </configuration>
             </plugin>
         </plugins>
     </build>
