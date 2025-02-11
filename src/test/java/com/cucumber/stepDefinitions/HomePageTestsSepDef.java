@@ -2,11 +2,18 @@ package com.cucumber.stepDefinitions;
 
 import com.selenium.driver.BaseDriver;
 import com.selenium.pages.HomePage;
+import com.utils.ContextShare;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.junit.Assert;
 
 public class HomePageTestsSepDef {
+
+    private final ContextShare context;
+
+    public HomePageTestsSepDef(ContextShare context){
+        this.context=context;
+    }
 
     @When("User Navigates to HomePage")
     public void user_navigates_to_home_page() {
