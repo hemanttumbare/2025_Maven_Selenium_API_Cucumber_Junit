@@ -7,3 +7,5 @@ Feature:This feature will test HomePage Scenarios
   Scenario: Verify HomePage Logo and Url are displayed
     When User Navigates to HomePage
     Then Verify HomePage Logo And URL are displayed
+
+    #Test Jenkins auto trigger
