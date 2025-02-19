@@ -14,14 +14,20 @@ pipeline {
         stage('Select Tag'){
             steps{
                  script {
-                           // Extract unique Cucumber tags from feature files
-                           def tags = bat(script: "grep -o '@[a-zA-Z0-9_]\\+' src/test/resources/FeatureFiles/*.feature | sort | uniq", returnStdout: true).trim().split("\n")
-                           // Prompt user to select a tag
-                                def selectedTag = input(
-                                    message: 'Select a Cucumber tag to run',
-                                    parameters: [choice(name: 'TAG', choices: tags.join("\n"), description: 'Choose a Cucumber tag')]
-                                )
-                                env.SELECTED_TAG = selectedTag
+                          // Extract unique Cucumber tags from feature files using PowerShell
+                              def tags = bat(script: 'powershell -Command "Select-String -Pattern \'@\\w+\' -Path src/test/resources/features/*.feature | ForEach-Object { $_.Matches.Value } | Sort-Object -Unique"', returnStdout: true).trim().split("\r\n")
+
+                              echo "Available Tags:\n${tags.join('\n')}"
+
+                              // Ask user to enter multiple tags manually (comma-separated)
+                              def selectedTags = input(
+                                  message: 'Enter the Cucumber tags to run (comma-separated)',
+                                  parameters: [string(name: 'TAGS', description: "Available Tags:\n${tags.join(', ')}")]
+                              ).trim()
+
+                              // Convert comma-separated input to Cucumber tag format
+                              env.SELECTED_TAGS = selectedTags.split(',').collect { "@${it.trim()}" }.join(' or ')
+                              echo "Selected Tags: ${env.SELECTED_TAGS}"
                             }
             }
         }
