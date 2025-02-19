@@ -48,7 +48,7 @@ pipeline {
         stage('Run Tests in Parallel') {
                     steps {
                         script {
-                            def selectedTags = params.SELECTED_TAGS
+                            def selectedTags = env.SELECTED_TAGS
                             if (!selectedTags) {
                                 error "No tags selected! Please select up to 3 tags."
                             } else if (selectedTags.size() > 3) {
