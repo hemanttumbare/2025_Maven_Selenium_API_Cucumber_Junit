@@ -15,7 +15,7 @@ pipeline {
             steps{
                  script {
                            // Extract unique Cucumber tags from feature files
-                           def tags = sh(script: "grep -o '@[a-zA-Z0-9_]\\+' src/test/resources/FeatureFiles/*.feature | sort | uniq", returnStdout: true).trim().split("\n")
+                           def tags = bat(script: "grep -o '@[a-zA-Z0-9_]\\+' src/test/resources/FeatureFiles/*.feature | sort | uniq", returnStdout: true).trim().split("\n")
                            // Prompt user to select a tag
                                 def selectedTag = input(
                                     message: 'Select a Cucumber tag to run',
