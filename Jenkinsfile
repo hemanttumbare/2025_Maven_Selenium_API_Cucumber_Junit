@@ -25,9 +25,15 @@ pipeline {
                                      def uniqueTags = listOfTags.toList().sort().join(', ')
                                      echo "Available Tags: ${uniqueTags}"
 
-                                    properties([parameters([choice(choices: "${releaseScopeChoices}", description: 'Chose the tag ',name: 'SELECTED_TAGS')])])
+                                     // Ask user to enter multiple tags manually
+                                     def selectedTags = input(
+                                         message: 'Select the Cucumber tag',
+                                         parameters: [string(name: 'TAGS', choices: "${uniqueTags}", description: "Select tag")]
+                                     ).trim()
 
-
+                                     // Store selected tags in environment variable
+                                     env.SELECTED_TAGS = selectedTags.split(',').collect { it.trim() }.join(' or ')
+                                     echo "Selected Tags: ${env.SELECTED_TAGS}"
                                  }
             }
         }
