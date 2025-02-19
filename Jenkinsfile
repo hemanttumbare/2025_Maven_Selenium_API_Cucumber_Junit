@@ -3,6 +3,7 @@ pipeline {
     agent any
     parameters {
         choice(name: 'Browser', choices: ['Chrome', 'Firefox', 'Edge'], description: 'Choose the Browser')
+         string(name: 'Tags', defaultValue: '', description: 'Enter Cucumber tag)')
     }
     stages {
       stage('Build') {
@@ -14,27 +15,33 @@ pipeline {
         stage('Select Tag'){
             steps{
                  script {
-                          // Extract unique Cucumber tags from feature files using PowerShell
-                              def tags = bat(script: 'powershell -Command "Select-String -Pattern \'@\\w+\' -Path src/test/resources/features/*.feature | ForEach-Object { $_.Matches.Value } | Sort-Object -Unique"', returnStdout: true).trim().split("\r\n")
+                                     def listOfTags = [] as Set
+                                     def files = findFiles(glob: 'src/test/resources/FeatureFiles/*.feature')
 
-                              echo "Available Tags:\n${tags.join('\n')}"
+                                     files.each { file ->
+                                         def content = readFile file.path
+                                         listOfTags.addAll(content.findAll(/@\w+/))  // Extracts tags using regex
+                                     }
 
-                              // Ask user to enter multiple tags manually (comma-separated)
-                              def selectedTags = input(
-                                  message: 'Enter the Cucumber tags to run (comma-separated)',
-                                  parameters: [string(name: 'TAGS', description: "Available Tags:\n${tags.join(', ')}")]
-                              ).trim()
+                                     def uniqueTags = listOfTags.toList().sort().join(', ')
+                                    // echo "Available Tags: ${uniqueTags}"
 
-                              // Convert comma-separated input to Cucumber tag format
-                              env.SELECTED_TAGS = selectedTags.split(',').collect { "@${it.trim()}" }.join(' or ')
-                              echo "Selected Tags: ${env.SELECTED_TAGS}"
-                            }
+                                     // Ask user to enter multiple tags manually
+                                     def selectedTags = input(
+                                         message: 'Enter the Cucumber tags to run (comma-separated)',
+                                         parameters: [string(name: 'TAGS', defaultValue: '', description: "Available Tags: ${uniqueTags}")]
+                                     ).trim()
+
+                                     // Store selected tags in environment variable
+                                     env.SELECTED_TAGS = selectedTags.split(',').collect { it.trim() }.join(' or ')
+                                     echo "Selected Tags: ${env.SELECTED_TAGS}"
+                                 }
             }
         }
         stage('Tests') {
             steps {
                 script {
-                      bat "mvn clean install -Dbrowser=${Browser} -Dcucumber.filter.tags=${env.SELECTED_TAG}"
+                      bat "mvn clean install -Dbrowser=${Browser} -Dcucumber.filter.tags=${env.SELECTED_TAGS }"
                 }
             }
         }
