@@ -15,7 +15,7 @@ pipeline {
         stage('Tests') {
             steps {
                 script {
-                      bat "mvn clean install -Dbrowser=${Browser} -Dcucumber.filter.tags=${env.Tags }"
+                      bat "mvn clean install -Dbrowser=${Browser} "
                 }
             }
         }
