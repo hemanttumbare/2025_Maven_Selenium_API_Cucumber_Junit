@@ -37,13 +37,40 @@ pipeline {
                                            }
                     }
          }
-        stage('Tests') {
-            steps {
-                script {
-                      bat "mvn clean install -Dbrowser=${Browser} -Dcucumber.filter.tags=${env.SELECTED_TAGS}"
+//         stage('Tests') {
+//             steps {
+//                 script {
+//                       bat "mvn clean install -Dbrowser=${Browser} -Dcucumber.filter.tags=${env.SELECTED_TAGS}"
+//                 }
+//             }
+//         }
+
+        stage('Run Tests in Parallel') {
+                    steps {
+                        script {
+                            def selectedTags = params.SELECTED_TAGS
+                            if (!selectedTags) {
+                                error "No tags selected! Please select up to 3 tags."
+                            } else if (selectedTags.size() > 3) {
+                                error "Too many tags selected! Please select a maximum of 3."
+                            }
+
+                            echo "Running tests for tags: ${selectedTags}"
+
+                            def parallelStages = [:]
+                            selectedTags.each { tag ->
+                                parallelStages["Test - ${tag}"] = {
+                                    stage("Execute ${tag}") {
+                                        steps {
+                                            bat "mvn clean install -Dbrowser=${params.Browser} -Dcucumber.filter.tags='${tag}'"
+                                        }
+                                    }
+                                }
+                            }
+                            parallel parallelStages  // Run selected tags in parallel
+                        }
+                    }
                 }
-            }
-        }
       stage('Generate Report') {
             steps{
                    allure includeProperties: false, jdk: '', results: [[path: 'allure-results']]
