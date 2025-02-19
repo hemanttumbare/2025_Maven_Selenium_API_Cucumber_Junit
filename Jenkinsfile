@@ -32,7 +32,7 @@ pipeline {
                                                ).trim()
 
                                                // Store selected tags in environment variable
-                                               env.SELECTED_TAGS = selectedTags.split(',').collect { it.trim() }.join(' or ')
+                                               env.SELECTED_TAGS = uniqueTags//selectedTags.split(',').collect { it.trim() }.join(' or ')
                                                echo "Selected Tags: ${env.SELECTED_TAGS}"
                                            }
                     }
