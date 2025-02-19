@@ -3,7 +3,6 @@ pipeline {
     agent any
     parameters {
         choice(name: 'Browser', choices: ['Chrome', 'Firefox', 'Edge'], description: 'Choose the Browser')
-         string(name: 'Tags', defaultValue: '', description: 'Enter Cucumber tag)')
     }
     stages {
       stage('Build') {
@@ -28,8 +27,8 @@ pipeline {
 
                                      // Ask user to enter multiple tags manually
                                      def selectedTags = input(
-                                         message: 'Enter the Cucumber tags to run (comma-separated)',
-                                         parameters: [string(name: 'TAGS', defaultValue: '', description: "Available Tags: ${uniqueTags}")]
+                                         message: 'Select the Cucumber tag',
+                                         parameters: [string(name: 'TAGS', choices: uniqueTags, description: "Select tag")]
                                      ).trim()
 
                                      // Store selected tags in environment variable
