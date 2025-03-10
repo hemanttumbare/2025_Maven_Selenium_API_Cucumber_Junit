@@ -15,6 +15,8 @@ public class BaseDriver {
         return baseDriver.get();
     }
 
+    public static void removeDriver(){ baseDriver.remove(); }
+
 
     public static void setup(){
         WebDriver driver;

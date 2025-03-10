@@ -13,6 +13,7 @@ public class CustomHooks {
             System.out.println("Closing the browser...!!!");
             if (driver != null) {
                 driver.quit();
+                BaseDriver.removeDriver();
             }else{
                 System.out.println("Base Driver is null...!!!");
             }
